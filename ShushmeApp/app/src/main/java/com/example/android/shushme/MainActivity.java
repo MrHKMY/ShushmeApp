@@ -1,12 +1,18 @@
 package com.example.android.shushme;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -82,5 +88,31 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.i(TAG, "API Client Connection FAILED");
+    }
+
+    public void onAddPlaceButton (View view) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+        != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, "Enable location permission", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        CheckBox locationPermission = findViewById(R.id.location_permission_checkbox);
+        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            locationPermission.setChecked(false);
+        } else {
+            locationPermission.setChecked(true);
+            locationPermission.setEnabled(false);
+        }
+    }
+
+    public void onLocationPermission (View view) {
+        ActivityCompat.requestPermissions(MainActivity.this, new String [] {Manifest.permission.ACCESS_FINE_LOCATION},PERMISSION_REQUEST_FINE_LOCATION);
     }
 }
